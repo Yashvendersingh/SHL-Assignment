@@ -75,8 +75,12 @@
         addMessage(text, true);
         conversationHistory.push({ role: "user", content: text });
 
+        const apiUrl = window.location.origin.startsWith('file://') 
+            ? 'http://127.0.0.1:8000/chat' 
+            : '/chat';
+
         try {
-            const response = await fetch('http://127.0.0.1:8000/chat', {
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ messages: conversationHistory })
