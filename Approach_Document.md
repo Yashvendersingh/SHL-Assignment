@@ -47,7 +47,8 @@ This approach ensures that query-matched names are ranked first, keeping the app
 
 ---
 
-## 4. Evaluation & AI Tools Usage
+## 4. Evaluation Approach
 
 * **E2E Test Suite**: We engineered 6 automated `pytest` test cases checking health endpoints, clarification logic, details requests, shortlist additions, and conversation endings.
-* **AI Tool Integration**: We leveraged **Antigravity** (an agentic coding AI assistant) for writing automated unit tests, refactoring search logic, formatting HTML elements, and generating documentation.
+* **Hard Eval Compliance**: Validated that `recommendations` list is empty during clarification turns and populated (1-10 items) only during shortlists. Honored the 8-turn conversation limit.
+
