@@ -22,48 +22,26 @@ Rather than relying purely on LLM reasoning for conversational routing (which is
 
 ### Pipeline Architecture Diagram
 ```
-                  +-----------------------------------+
-                  |      User Request (POST /chat)     |
-                  +-----------------+-----------------+
-                                    |
-                                    v
-                  +-----------------+-----------------+
-                  |      Intent Detection Router      |
-                  +-----------------+-----------------+
-                                    |
-         +-----------------+--------+--------+-----------------+
-         |                 |                 |                 |
-         v                 v                 v                 v
-   [Refusal Rule]   [Clarify Query]   [Details Query]   [Refinement/Recom]
-         |                 |                 |                 |
-         |                 |                 |                 v
-         |                 |                 |     +-----------+-----------+
-         |                 |                 |     | Parse History Shortlist |
-         |                 |                 |     +-----------+-----------+
-         |                 |                 |                 |
-         |                 |                 |                 v
-         |                 |                 |     +-----------+-----------+
-         |                 |                 |     | Clean & Query Search  |
-         |                 |                 |     +-----------+-----------+
-         |                 |                 v                 |
-         |                 |        +--------+--------+        |
-         |                 |        |  Weighted Search|        |
-         |                 |        |  Catalog Lookup |        |
-         |                 |        +--------+--------+        |
-         |                 |                 |                 |
-         +-----------------+--------+--------+-----------------+
-                                    |
-                                    v
-                  +-----------------+-----------------+
-                  |     Enforce Grounding Validation  |
-                  |     (Overlay Catalog URLs & Names)|
-                  +-----------------+-----------------+
-                                    |
-                                    v
-                  +-----------------+-----------------+
-                  |      Format Response Output       |
-                  |      (Schema-Compliant Reply)     |
-                  +-----------------------------------+
+[User Request (POST /chat)] ---> [Intent Router]
+                                       |
+  +---------------+--------------------+----------------+-----------------+
+  |               |                                     |                 |
+  v               v                                     v                 v
+[Refusal]  [Clarify Query]                       [Details Query]   [Refine Shortlist]
+  |               |                                     |                 |
+  |               |                                     v                 v
+  |               |                             [Catalog Lookup]   [Parse Previous List]
+  |               |                                     |                 |
+  |               |                                     |                 v
+  |               |                                     |          [Clean & Run Search]
+  |               |                                     |                 |
+  +---------------+---------------+---------------------+-----------------+
+                                  |
+                                  v
+                     [Grounding Validation Layer]
+                                  |
+                                  v
+                     [Output Schema-Compliant Reply]
 ```
 
 ---
