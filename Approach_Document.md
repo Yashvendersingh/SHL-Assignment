@@ -20,6 +20,52 @@ Rather than relying purely on LLM reasoning for conversational routing (which is
 3. **Refine (Additions)**: If the user says *"also add X"*, we isolate *"X"*, retrieve it, and programmatically merge it with the parsed history shortlist.
 4. **Compare**: If the user requests comparisons, we retrieve both items and list differences directly from catalog data.
 
+### Pipeline Architecture Diagram
+```
+                  +-----------------------------------+
+                  |      User Request (POST /chat)     |
+                  +-----------------+-----------------+
+                                    |
+                                    v
+                  +-----------------+-----------------+
+                  |      Intent Detection Router      |
+                  +-----------------+-----------------+
+                                    |
+         +-----------------+--------+--------+-----------------+
+         |                 |                 |                 |
+         v                 v                 v                 v
+   [Refusal Rule]   [Clarify Query]   [Details Query]   [Refinement/Recom]
+         |                 |                 |                 |
+         |                 |                 |                 v
+         |                 |                 |     +-----------+-----------+
+         |                 |                 |     | Parse History Shortlist |
+         |                 |                 |     +-----------+-----------+
+         |                 |                 |                 |
+         |                 |                 |                 v
+         |                 |                 |     +-----------+-----------+
+         |                 |                 |     | Clean & Query Search  |
+         |                 |                 |     +-----------+-----------+
+         |                 |                 v                 |
+         |                 |        +--------+--------+        |
+         |                 |        |  Weighted Search|        |
+         |                 |        |  Catalog Lookup |        |
+         |                 |        +--------+--------+        |
+         |                 |                 |                 |
+         +-----------------+--------+--------+-----------------+
+                                    |
+                                    v
+                  +-----------------+-----------------+
+                  |     Enforce Grounding Validation  |
+                  |     (Overlay Catalog URLs & Names)|
+                  +-----------------+-----------------+
+                                    |
+                                    v
+                  +-----------------+-----------------+
+                  |      Format Response Output       |
+                  |      (Schema-Compliant Reply)     |
+                  +-----------------------------------+
+```
+
 ---
 
 ## 2. Retrieval Setup & Database Enrichment
